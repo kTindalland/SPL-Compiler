@@ -1,4 +1,5 @@
 spl-parser: source/spl.tab.c
+	mkdir -p bin
 	gcc source/spl.c source/spl.tab.c -lfl -o bin/spl-parser
 
 source/spl.tab.c: source/lex.yy.c
