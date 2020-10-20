@@ -6,4 +6,4 @@ As part of my computer science BSc at Hull University, I have been tasked with c
 
 #### Development Environment
 Debian Buster Virtual Machine
-![Debian Logo](https://www.google.com/url?sa=i&url=https%3A%2F%2Fwiki.videolan.org%2FFile%3ADebian-logo.jpg%2F&psig=AOvVaw3J-fOkESlVV_TNioJMYqCs&ust=1603292817423000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCLDs3LC5w-wCFQAAAAAdAAAAABAD)
+![Debian Logo](https://wiki.videolan.org/images/Debian-logo.jpg)
