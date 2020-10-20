@@ -65,9 +65,19 @@ SYMTABNODEPTR  symTab[SYMTABSIZE];
 int currentSymTabSize = 0;
 
 %}
-%token COLON SEMICOLON DOT COMMA APOST ASSIGN BRA KET PLUS MINUS TIMES DIV EQUAL NOTEQ LESSTHAN MORETHAN LESSEQUAL MOREEQUAL ENDP CODE OF TYPE DECL IF THEN ELSE ENDIF DO WHILE ENDDO ENDWHILE FOR IS BY TO ENDFOR WRITE NEWL READ CHAR INT REAL NUMBER REALNUM CHARCONST IDEN
+
+%start program
+
+%union {
+	int iVal;
+	TERNARY_TREE tVal;
+}
+
+%token<iVal> IDEN
+
+%token COLON SEMICOLON DOT COMMA APOST ASSIGN BRA KET PLUS MINUS TIMES DIV EQUAL NOTEQ LESSTHAN MORETHAN LESSEQUAL MOREEQUAL ENDP CODE OF TYPE DECL IF THEN ELSE ENDIF DO WHILE ENDDO ENDWHILE FOR IS BY TO ENDFOR WRITE NEWL READ CHAR INT REAL NUMBER REALNUM CHARCONST 
 %left AND OR NOT
-%type block identifiers_list declaration declaration_block type statement_list statement assignment_statement if_statement do_statement while_statement for_statement write_statement read_statement output_list conditional comparator expression term value constant number_constant
+%type<tVal> block identifiers_list declaration declaration_block type statement_list statement assignment_statement if_statement do_statement while_statement for_statement write_statement read_statement output_list conditional comparator expression term value constant number_constant
 %%
 
 program		: IDEN COLON block ENDP IDEN DOT
