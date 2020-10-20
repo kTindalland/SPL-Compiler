@@ -8,6 +8,62 @@
 void yyerror(char *s);
 int yylex(void);
 
+/* 
+   Some constants.
+*/
+
+  /* These constants are used later in the code */
+#define SYMTABSIZE     50
+#define IDLENGTH       15
+#define NOTHING        -1
+#define INDENTOFFSET    2
+
+enum ParseTreeNodeType { PROGRAM, BLOCK } ;  
+                          /* Add more types here, as more nodes
+                                           added to tree */
+
+#ifndef TRUE
+#define TRUE 1
+#endif
+
+#ifndef FALSE
+#define FALSE 0
+#endif
+
+#ifndef NULL
+#define NULL 0
+#endif
+
+/* ------------- parse tree definition --------------------------- */
+
+struct treeNode {
+    int  item;
+    int  nodeIdentifier;
+    struct treeNode *first;
+    struct treeNode *second;
+    struct treeNode *third;
+  };
+
+typedef  struct treeNode TREE_NODE;
+typedef  TREE_NODE        *TERNARY_TREE;
+
+/* ------------- forward declarations --------------------------- */
+
+TERNARY_TREE create_node(int,int,TERNARY_TREE,TERNARY_TREE,TERNARY_TREE);
+
+/* ------------- symbol table definition --------------------------- */
+
+struct symTabNode {
+    char identifier[IDLENGTH];
+};
+
+typedef  struct symTabNode SYMTABNODE;
+typedef  SYMTABNODE        *SYMTABNODEPTR;
+
+SYMTABNODEPTR  symTab[SYMTABSIZE]; 
+
+int currentSymTabSize = 0;
+
 %}
 %token COLON SEMICOLON DOT COMMA APOST ASSIGN BRA KET PLUS MINUS TIMES DIV EQUAL NOTEQ LESSTHAN MORETHAN LESSEQUAL MOREEQUAL ENDP CODE OF TYPE DECL IF THEN ELSE ENDIF DO WHILE ENDDO ENDWHILE FOR IS BY TO ENDFOR WRITE NEWL READ CHAR INT REAL NUMBER REALNUM CHARCONST IDEN
 %left AND OR NOT
@@ -116,4 +172,20 @@ number_constant : NUMBER
 		;
 
 %%
+
+
+TERNARY_TREE create_node(int ival, int case_identifier, TERNARY_TREE p1,
+			 TERNARY_TREE  p2, TERNARY_TREE  p3)
+{
+    TERNARY_TREE t;
+    t = (TERNARY_TREE)malloc(sizeof(TREE_NODE));
+    t->item = ival;
+    t->nodeIdentifier = case_identifier;
+    t->first = p1;
+    t->second = p2;
+    t->third = p3;
+    return (t);
+}
+
+
 #include "lex.yy.c"
