@@ -19,7 +19,6 @@ delim [ \t\r\n]
 ws {delim}+
 digit [0-9]
 integer {digit}+
-real {integer}.{integer}
 character [a-zA-Z]
 identifier {character}({character}|{digit})*
 characterConst \'{character}\'
@@ -73,10 +72,6 @@ REAL RETURN(vartype, REAL);
 {integer} {
 	yylval.iVal = atoi(yytext);
 	RETURN(number, NUMBER);
-	}
-{real} {
-	yylval.iVal = atof(yytext);
-	RETURN(number, REALNUM);
 	}
 {characterConst} {
 	RETURN(character, CHARCONST);
