@@ -18,7 +18,7 @@ int yylex(void);
 #define NOTHING        -1
 #define INDENTOFFSET    2
 
-enum ParseTreeNodeType { PROGRAM, BLOCK, NUMBER_CONSTANT, CONSTANT, VALUE, EXPRESSION, TERM, COMPARATOR, CONDITIONAL, OUTPUT_LIST, FOR_STATEMENT, WHILE_STATEMENT, FOR_EXPRESSIONS, DO_STATEMENT, IF_STATEMENT, ASSIGNMENT_STATEMENT, STATEMENT_LIST, TYPENODE, DECLARATION_BLOCK, WRITE_STATEMENT, READ_STATEMENT, STATEMENT, DECLARATION, IDENTIFIERS_LIST } ;  
+enum ParseTreeNodeType { PROGRAM, BLOCK, NUMBER_CONSTANT, CONSTANT, VALUE, EXPRESSION, TERM, COMPARATOR, CONDITIONAL, OUTPUT_LIST, FOR_STATEMENT, WHILE_STATEMENT, FOR_EXPRESSIONS, DO_STATEMENT, IF_STATEMENT, ASSIGNMENT_STATEMENT, STATEMENT_LIST, TYPENODE, DECLARATION_BLOCK, WRITE_STATEMENT, READ_STATEMENT, STATEMENT, DECLARATION, IDENTIFIERS_LIST, INTEGER_NODE, REAL_NODE } ;  
                           /* Add more types here, as more nodes
                                            added to tree */
 
@@ -50,6 +50,7 @@ typedef  TREE_NODE        *TERNARY_TREE;
 /* ------------- forward declarations --------------------------- */
 
 TERNARY_TREE create_node(int,int,TERNARY_TREE,TERNARY_TREE,TERNARY_TREE);
+void PrintTree(TERNARY_TREE);
 
 /* ------------- symbol table definition --------------------------- */
 
@@ -75,12 +76,15 @@ int currentSymTabSize = 0;
 
 %token<iVal> IDEN
 
-%token<iVal> COLON SEMICOLON DOT COMMA APOST ASSIGN BRA KET PLUS MINUS TIMES DIV EQUAL NOTEQ LESSTHAN MORETHAN LESSEQUAL MOREEQUAL ENDP CODE OF TYPE DECL IF THEN ELSE ENDIF DO WHILE ENDDO ENDWHILE FOR IS BY TO ENDFOR WRITE NEWL READ CHAR INT REAL NUMBER REALNUM CHARCONST 
+%token<iVal> COLON SEMICOLON DOT COMMA APOST ASSIGN BRA KET PLUS MINUS TIMES DIV EQUAL NOTEQ LESSTHAN MORETHAN LESSEQUAL MOREEQUAL ENDP CODE OF TYPE DECL IF THEN ELSE ENDIF DO WHILE ENDDO ENDWHILE FOR IS BY TO ENDFOR WRITE NEWL READ CHAR REAL INT NUMBER CHARCONST 
 %left AND OR NOT
-%type<tVal> block identifiers_list declaration declaration_block type statement_list statement assignment_statement if_statement do_statement while_statement for_statement write_statement read_statement output_list conditional comparator expression term value constant number_constant program
+%type<tVal> block identifiers_list declaration declaration_block type statement_list statement assignment_statement if_statement do_statement while_statement for_statement write_statement read_statement output_list conditional comparator expression term value constant number_constant program integer real_number
 %%
 
-program		: IDEN COLON block ENDP IDEN DOT { $$ = create_node(NOTHING, PROGRAM, $3, NULL, NULL); }
+program		: IDEN COLON block ENDP IDEN DOT { TERNARY_TREE ParseTree;
+						ParseTree = create_node(NOTHING, PROGRAM, $3, NULL, NULL);
+						PrintTree(ParseTree);
+						}
 		;
 
 block		: CODE statement_list { $$ = create_node(NOTHING, BLOCK, $2, NULL, NULL); }
@@ -156,7 +160,7 @@ comparator	: EQUAL { $$ = create_node(EQUAL, COMPARATOR, NULL, NULL, NULL); }
 		| MOREEQUAL { $$ = create_node(MOREEQUAL, COMPARATOR, NULL, NULL, NULL); }
 		;
 
-expression	: term { $$ = create_node(NOTHING, EXPRESSION, NULL, NULL, NULL); }
+expression	: term { $$ = create_node(NOTHING, EXPRESSION, $1, NULL, NULL); }
 		| expression PLUS term { $$ = create_node(PLUS, EXPRESSION, $1, $3, NULL); }
 		| expression MINUS term { $$ = create_node(MINUS, EXPRESSION, $1, $3, NULL); }
 		;
@@ -175,10 +179,16 @@ constant	: number_constant { $$ = create_node(NOTHING, CONSTANT, $1, NULL, NULL)
 		| CHARCONST { $$ = create_node($1, CONSTANT, NULL, NULL, NULL); }
 		;
 
-number_constant : NUMBER { $$ = create_node($1, NUMBER_CONSTANT, NULL, NULL, NULL); }
-		| REALNUM { $$ = create_node($1, NUMBER_CONSTANT, NULL, NULL, NULL); }
-		| MINUS NUMBER { $$ = create_node(-$1, NUMBER_CONSTANT, NULL, NULL, NULL); }
-		| MINUS REALNUM { $$ = create_node(-$1, NUMBER_CONSTANT, NULL, NULL, NULL); }
+number_constant : integer { $$ = create_node(NOTHING, NUMBER_CONSTANT, $1, NULL, NULL); }
+		| real_number { $$ = create_node(NOTHING, NUMBER_CONSTANT, $1, NULL, NULL); }
+		| MINUS integer { $$ = create_node(MINUS, NUMBER_CONSTANT, $2, NULL, NULL); }
+		| MINUS real_number { $$ = create_node(MINUS, NUMBER_CONSTANT, $2, NULL, NULL); }
+		;
+
+integer		: NUMBER { $$ = create_node($1, INTEGER_NODE, NULL, NULL, NULL); }
+		;
+
+real_number	: integer DOT integer { $$ = create_node(NOTHING, REAL_NODE, $1, $3, NULL); }
 		;
 
 %%
@@ -197,5 +207,14 @@ TERNARY_TREE create_node(int ival, int case_identifier, TERNARY_TREE p1,
     return (t);
 }
 
+void PrintTree(TERNARY_TREE t)
+{
+	if (t == NULL) return;
+	printf("Item: %d", t->item);
+	printf(" nodeIdentifier: %d\n", t->nodeIdentifier);
+	PrintTree(t->first);
+	PrintTree(t->second);
+	PrintTree(t->third);
+}
 
 #include "lex.yy.c"
