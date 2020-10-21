@@ -10,4 +10,4 @@ source/lex.yy.c:
 
 clean:
 	cd source; rm lex.yy.c spl.tab.c;
-	cd bin; rm spl-parser;
+	rm -r bin/
