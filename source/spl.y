@@ -18,7 +18,7 @@ int yylex(void);
 #define NOTHING        -1
 #define INDENTOFFSET    2
 
-enum ParseTreeNodeType { PROGRAM, BLOCK } ;  
+enum ParseTreeNodeType { PROGRAM, BLOCK, NUMBER_CONSTANT, CONSTANT, VALUE, EXPRESSION, TERM, COMPARATOR, CONDITIONAL, OUTPUT_LIST, FOR_STATEMENT, WHILE_STATEMENT, FOR_EXPRESSIONS, DO_STATEMENT, IF_STATEMENT, ASSIGNMENT_STATEMENT, STATEMENT_LIST, TYPENODE, DECLARATION_BLOCK, WRITE_STATEMENT, READ_STATEMENT, STATEMENT, DECLARATION, IDENTIFIERS_LIST } ;  
                           /* Add more types here, as more nodes
                                            added to tree */
 
@@ -75,110 +75,110 @@ int currentSymTabSize = 0;
 
 %token<iVal> IDEN
 
-%token COLON SEMICOLON DOT COMMA APOST ASSIGN BRA KET PLUS MINUS TIMES DIV EQUAL NOTEQ LESSTHAN MORETHAN LESSEQUAL MOREEQUAL ENDP CODE OF TYPE DECL IF THEN ELSE ENDIF DO WHILE ENDDO ENDWHILE FOR IS BY TO ENDFOR WRITE NEWL READ CHAR INT REAL NUMBER REALNUM CHARCONST 
+%token<iVal> COLON SEMICOLON DOT COMMA APOST ASSIGN BRA KET PLUS MINUS TIMES DIV EQUAL NOTEQ LESSTHAN MORETHAN LESSEQUAL MOREEQUAL ENDP CODE OF TYPE DECL IF THEN ELSE ENDIF DO WHILE ENDDO ENDWHILE FOR IS BY TO ENDFOR WRITE NEWL READ CHAR INT REAL NUMBER REALNUM CHARCONST 
 %left AND OR NOT
-%type<tVal> block identifiers_list declaration declaration_block type statement_list statement assignment_statement if_statement do_statement while_statement for_statement write_statement read_statement output_list conditional comparator expression term value constant number_constant
+%type<tVal> block identifiers_list declaration declaration_block type statement_list statement assignment_statement if_statement do_statement while_statement for_statement write_statement read_statement output_list conditional comparator expression term value constant number_constant program
 %%
 
-program		: IDEN COLON block ENDP IDEN DOT
+program		: IDEN COLON block ENDP IDEN DOT { $$ = create_node(NOTHING, PROGRAM, $3, NULL, NULL); }
 		;
 
-block		: CODE statement_list
-		| DECL declaration_block CODE statement_list
+block		: CODE statement_list { $$ = create_node(NOTHING, BLOCK, $2, NULL, NULL); }
+		| DECL declaration_block CODE statement_list { $$ = create_node(DECL, BLOCK, $2, $4, NULL); }
 		;
 
-identifiers_list: IDEN
-		| identifiers_list COMMA IDEN
+identifiers_list: IDEN { $$ = create_node($1, IDENTIFIERS_LIST, NULL, NULL, NULL); }
+		| identifiers_list COMMA IDEN { $$ = create_node($3, IDENTIFIERS_LIST, $1, NULL, NULL); }
 		;
 
-declaration	: identifiers_list OF TYPE type SEMICOLON
+declaration	: identifiers_list OF TYPE type SEMICOLON { $$ = create_node(NOTHING, DECLARATION, $1, $4, NULL); }
 		;
 
-declaration_block: declaration
-		| declaration_block declaration
+declaration_block: declaration { $$ = create_node(NOTHING, DECLARATION_BLOCK, $1, NULL, NULL); }
+		| declaration_block declaration { $$ = create_node(BLOCK, DECLARATION_BLOCK, $1, $2, NULL); }
 		;
 
-type		: CHAR
-		| INT
-		| REAL
+type		: CHAR { $$ = create_node(NOTHING, TYPENODE, NULL, NULL, NULL); }
+		| INT { $$ = create_node(INT, TYPENODE, NULL, NULL, NULL); }
+		| REAL { $$ = create_node(REAL, TYPENODE, NULL, NULL, NULL); }
 		;
 
-statement_list	: statement
-		| statement_list SEMICOLON statement
+statement_list	: statement { $$ = create_node(NOTHING, STATEMENT_LIST, $1, NULL, NULL); }
+		| statement_list SEMICOLON statement { $$ = create_node(SEMICOLON, STATEMENT_LIST, $1, $3, NULL); }
 		;
 
-statement	: assignment_statement
-		| if_statement
-		| do_statement
-		| while_statement
-		| for_statement
-		| write_statement
-		| read_statement
+statement	: assignment_statement { $$ = create_node(ASSIGNMENT_STATEMENT, STATEMENT, $1, NULL, NULL); }
+		| if_statement { $$ = create_node(IF_STATEMENT, STATEMENT, $1, NULL, NULL); }
+		| do_statement { $$ = create_node(DO_STATEMENT, STATEMENT, $1, NULL, NULL); }
+		| while_statement { $$ = create_node(WHILE_STATEMENT, STATEMENT, $1, NULL, NULL); }
+		| for_statement { $$ = create_node(FOR_STATEMENT, STATEMENT, $1, NULL, NULL); }
+		| write_statement { $$ = create_node(WRITE_STATEMENT, STATEMENT, $1, NULL, NULL); }
+		| read_statement { $$ = create_node(READ_STATEMENT, STATEMENT, $1, NULL, NULL); }
 		;
 
-assignment_statement: expression ASSIGN IDEN
+assignment_statement: expression ASSIGN IDEN { $$ = create_node(NOTHING, ASSIGNMENT_STATEMENT, $1, NULL, NULL); }
 		;
 
-if_statement	: IF conditional THEN statement_list ENDIF
-		| IF conditional THEN statement_list ELSE statement_list ENDIF
+if_statement	: IF conditional THEN statement_list ENDIF { $$ = create_node(NOTHING, IF_STATEMENT, $2, $4, NULL); }
+		| IF conditional THEN statement_list ELSE statement_list ENDIF { $$ = create_node(ELSE, IF_STATEMENT, $2, $4, $6); }
 		;
 
-do_statement	: DO statement_list WHILE conditional ENDDO
+do_statement	: DO statement_list WHILE conditional ENDDO { $$ = create_node(NOTHING, DO_STATEMENT, $2, $4, NULL); }
 		;
 		
-while_statement	: WHILE conditional DO statement_list ENDWHILE
+while_statement	: WHILE conditional DO statement_list ENDWHILE { $$ = create_node(NOTHING, WHILE_STATEMENT, $2, $4, NULL); }
 		;
 
-for_statement	: FOR IDEN IS expression BY expression TO expression DO statement_list ENDFOR
+for_statement	: FOR IDEN IS expression BY expression TO expression DO statement_list ENDFOR { $$ = create_node(NOTHING, FOR_STATEMENT, create_node(NOTHING, FOR_EXPRESSIONS, $4, $6, $8 ),$10 , NULL); }
 		;
 
-write_statement	: WRITE BRA output_list KET
-		| NEWL
+write_statement	: WRITE BRA output_list KET { $$ = create_node(NOTHING, WRITE_STATEMENT, $3, NULL, NULL); }
+		| NEWL { $$ = create_node(NEWL, WRITE_STATEMENT, NULL, NULL, NULL); }
 		;
 
-read_statement	: READ BRA IDEN KET
+read_statement	: READ BRA IDEN KET { $$ = create_node(NOTHING, READ_STATEMENT, NULL, NULL, NULL); }
 		;
 
-output_list	: value
-		| output_list COMMA value
+output_list	: value { $$ = create_node(NOTHING, OUTPUT_LIST, $1, NULL, NULL); }
+		| output_list COMMA value { $$ = create_node(COMMA, OUTPUT_LIST, $1, $3, NULL); }
 
-conditional	: expression comparator expression
-		| NOT conditional
-		| conditional AND conditional
-		| conditional OR conditional
+conditional	: expression comparator expression { $$ = create_node(NOTHING, CONDITIONAL, $1, $2, $3); }
+		| NOT conditional { $$ = create_node(NOT, CONDITIONAL, $2, NULL, NULL); }
+		| conditional AND conditional { $$ = create_node(AND, CONDITIONAL, $1, $3, NULL); }
+		| conditional OR conditional { $$ = create_node(OR, CONDITIONAL, $1, $3, NULL); }	
 		;
 
-comparator	: EQUAL
-		| NOTEQ
-		| LESSTHAN
-		| MORETHAN
-		| LESSEQUAL
-		| MOREEQUAL
+comparator	: EQUAL { $$ = create_node(EQUAL, COMPARATOR, NULL, NULL, NULL); }
+		| NOTEQ { $$ = create_node(NOTEQ, COMPARATOR, NULL, NULL, NULL); }
+		| LESSTHAN { $$ = create_node(LESSTHAN, COMPARATOR, NULL, NULL, NULL); }
+		| MORETHAN { $$ = create_node(MORETHAN, COMPARATOR, NULL, NULL, NULL); }
+		| LESSEQUAL { $$ = create_node(LESSEQUAL, COMPARATOR, NULL, NULL, NULL); }
+		| MOREEQUAL { $$ = create_node(MOREEQUAL, COMPARATOR, NULL, NULL, NULL); }
 		;
 
-expression	: term
-		| expression PLUS term
-		| expression MINUS term
+expression	: term { $$ = create_node(NOTHING, EXPRESSION, NULL, NULL, NULL); }
+		| expression PLUS term { $$ = create_node(PLUS, EXPRESSION, $1, $3, NULL); }
+		| expression MINUS term { $$ = create_node(MINUS, EXPRESSION, $1, $3, NULL); }
 		;
 
-term		: value
-		| term TIMES value
-		| term DIV value
+term		: value { $$ = create_node(NOTHING, TERM, $1, NULL, NULL); }
+		| term TIMES value { $$ = create_node(NOTHING, TERM, $1, $3, NULL); }
+		| term DIV value { $$ = create_node(NOTHING, TERM, $1, $3, NULL); }
 		;
 
-value		: IDEN
-		| constant
-		| BRA expression KET
+value		: IDEN { $$ = create_node($1, VALUE, NULL, NULL, NULL); }
+		| constant { $$ = create_node(NOTHING, VALUE, $1, NULL, NULL); }
+		| BRA expression KET { $$ = create_node(NOTHING, VALUE, $2, NULL, NULL); }
 		;
 
-constant	: number_constant
-		| CHARCONST
+constant	: number_constant { $$ = create_node(NOTHING, CONSTANT, $1, NULL, NULL); }
+		| CHARCONST { $$ = create_node($1, CONSTANT, NULL, NULL, NULL); }
 		;
 
-number_constant : NUMBER
-		| REALNUM
-		| MINUS NUMBER
-		| MINUS REALNUM
+number_constant : NUMBER { $$ = create_node($1, NUMBER_CONSTANT, NULL, NULL, NULL); }
+		| REALNUM { $$ = create_node($1, NUMBER_CONSTANT, NULL, NULL, NULL); }
+		| MINUS NUMBER { $$ = create_node(-$1, NUMBER_CONSTANT, NULL, NULL, NULL); }
+		| MINUS REALNUM { $$ = create_node(-$1, NUMBER_CONSTANT, NULL, NULL, NULL); }
 		;
 
 %%
