@@ -175,7 +175,7 @@ value		: IDEN { $$ = create_node($1, VALUE, NULL, NULL, NULL); }
 		| BRA expression KET { $$ = create_node(NOTHING, VALUE, $2, NULL, NULL); }
 		;
 
-constant	: number_constant { $$ = create_node(NOTHING, CONSTANT, $1, NULL, NULL); }
+constant	: number_constant { $$ = create_node(NUMBER, CONSTANT, $1, NULL, NULL); }
 		| CHARCONST { $$ = create_node($1, CONSTANT, NULL, NULL, NULL); }
 		;
 

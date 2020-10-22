@@ -74,6 +74,9 @@ REAL RETURN(vartype, REAL);
 	RETURN(number, NUMBER);
 	}
 {characterConst} {
+	char character;
+	character = yytext[1];
+	yylval.iVal = character;
 	RETURN(character, CHARCONST);
 	}
 {identifier} {
