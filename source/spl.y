@@ -219,7 +219,7 @@ void PrintTree(TERNARY_TREE t, int tabbingAmount)
 
 	/* Do tabbing */
 	for (int i = 0; i < tabbingAmount; i++) {
-		printf("\t");
+		printf("    ");
 	}
 
 	if (t->item != NOTHING || t->nodeIdentifier == REAL_NODE) {
