@@ -11,3 +11,6 @@ source/lex.yy.c:
 clean:
 	cd source; rm lex.yy.c spl.tab.c;
 	rm -r bin/
+
+testa: spl-parser
+	cd bin; ./spl-parser < ../spl-progs/a.spl 2> output.txt
