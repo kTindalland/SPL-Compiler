@@ -335,7 +335,6 @@ void PrintTree(TERNARY_TREE t, int tabbingAmount)
 		printf(" nodeIdentifier: %s\n", NodeNames[t->nodeIdentifier]);
 	}
 
-	printf("\n");
 
 	PrintTree(t->first, tabbingAmount + 1);
 	PrintTree(t->second, tabbingAmount + 1);
