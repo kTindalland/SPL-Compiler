@@ -39,4 +39,8 @@ jobs:
         run: sudo apt-get install bison
         
       - name: run flex
-        run: flex spl.l
+        run: cd source; flex spl.l;
+        
+      - name: run bison
+        run: cd source; bison spl.y
+        
