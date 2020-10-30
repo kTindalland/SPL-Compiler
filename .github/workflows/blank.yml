@@ -33,10 +33,10 @@ jobs:
           echo test, and deploy your project.
           
       - name: Get Flex
-        run: apt install flex
+        run: sudo apt-get install flex
       
       - name: Get Bison
-        run: apt install bison
+        run: sudo apt-get install bison
         
       - name: run flex
         run: flex spl.l
