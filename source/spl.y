@@ -3,6 +3,7 @@
 /* Import c standard libs */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #define YYDEBUG 1
 
 void yyerror(char *s);
@@ -14,6 +15,7 @@ int yylex(void);
 
   /* These constants are used later in the code */
 #define SYMTABSIZE     50
+#define TYPELENGTH     10
 #define IDLENGTH       15
 #define NOTHING        -1
 #define INDENTOFFSET    2
@@ -63,7 +65,7 @@ void SymbolTablePopulateSingleType(TERNARY_TREE iden_list, int type);
 
 struct symTabNode {
     char identifier[IDLENGTH];
-    char* typeSymbol;
+    char typeSymbol[TYPELENGTH];
 };
 
 typedef  struct symTabNode SYMTABNODE;
@@ -71,7 +73,8 @@ typedef  SYMTABNODE        *SYMTABNODEPTR;
 
 SYMTABNODEPTR  symTab[SYMTABSIZE]; 
 
-SYMTABNODEPTR GetIdentifier(int number);
+char* GetIdentifier(int number);
+char* GetType(int number);
 
 int currentSymTabSize = 0;
 
@@ -106,8 +109,7 @@ identifiers_list: identifier { $$ = create_node(NOTHING, IDENTIFIERS_LIST, $1, N
 		| identifiers_list COMMA identifier { $$ = create_node(NOTHING, IDENTIFIERS_LIST, $1, $3, NULL); }
 		;
 
-declaration	: identifiers_list OF TYPE type SEMICOLON { $$ = create_node(NOTHING, DECLARATION, $1, $4, NULL); 
-		SymbolTablePopulateTypes($1, $4->item); }
+declaration	: identifiers_list OF TYPE type SEMICOLON { $$ = create_node(NOTHING, DECLARATION, $1, $4, NULL); }
 		;
 
 declaration_block: declaration { $$ = create_node(NOTHING, DECLARATION_BLOCK, $1, NULL, NULL); }
@@ -220,6 +222,16 @@ TERNARY_TREE create_node(int ival, int case_identifier, TERNARY_TREE p1,
     t->second = p2;
     t->third = p3;
 
+    if(case_identifier == IDENNODE) {
+    	fprintf(stderr, "DEBUGIDENNODE %s\n", symTab[t->item]->identifier);
+	}	
+	
+    if (case_identifier == DECLARATION) {
+    	
+    	fprintf(stderr, "DEBUGIDENNODE 2 \n");
+    	SymbolTablePopulateTypes(t->first, t->second->item);
+
+    }
     return (t);
 }
 
@@ -423,6 +435,7 @@ void CodeGen(TERNARY_TREE t) {
 			CodeGen(t->second);
 			printf(" = ");
 			CodeGen(t->first);
+			printf(";");
 			break;
 
 		case IF_STATEMENT:
@@ -513,8 +526,11 @@ void CodeGen(TERNARY_TREE t) {
 
 		case READ_STATEMENT:
 			printf("scanf(\"");
-			printf("%s\",", symTab[t->item]->typeSymbol);    /* Type */
-			printf("&%s);",symTab[t->item]->identifier);    /* Variable */
+			char* typesymbol = GetType(t->first->item);
+			printf("%s\",", typesymbol);    /* Type */
+
+			char* idensymbol = GetIdentifier(t->first->item);
+			printf("&%s);",idensymbol);    /* Variable */
 			break;
 		
 		case CONDITIONAL:
@@ -646,8 +662,8 @@ void CodeGen(TERNARY_TREE t) {
 			break;
 
 		case IDENNODE: ;
-			SYMTABNODEPTR iden = GetIdentifier(t->item);
-			printf("%s", iden->identifier);
+			char* iden = GetIdentifier(t->item);
+			printf("%s", iden);
 			break;
 
 
@@ -656,15 +672,23 @@ void CodeGen(TERNARY_TREE t) {
 }
 
 
-SYMTABNODEPTR GetIdentifier(int number) {
+char* GetIdentifier(int number) {
 	if (number < SYMTABSIZE) {
-		return symTab[number];
+		return symTab[number]->identifier;
 	}
 	else {
-		fprintf(stderr, "Identifier not found in symbol table!");
-		return symTab[0];
+		return "Identifier not found!";
 	}
 
+}
+
+char* GetType(int number) {
+	if (number < SYMTABSIZE) {
+		return symTab[number]->typeSymbol;
+	}
+	else {
+		return "notfound";
+	}
 }
 
 void GenerateForLoop(TERNARY_TREE for_node, TERNARY_TREE for_statements) {
@@ -711,22 +735,30 @@ void SymbolTablePopulateTypes(TERNARY_TREE iden_list, int type) {
 
 void SymbolTablePopulateSingleType(TERNARY_TREE iden_list, int type) {
 
-		char* typeSym;
+		char typeSym[4];
 		
 		switch(type) {
 			case INT:
-				typeSym = "%d";
+				strncpy(symTab[iden_list->item]->typeSymbol, "%d", TYPELENGTH);
+				fprintf(stderr, "Hit INT");
 				break;
 			case REAL:
-				typeSym = "%lf";
+				//*typeSym = "%lf";
+				strncpy(symTab[iden_list->item]->typeSymbol, "%lf", TYPELENGTH);
+				fprintf(stderr, "Hit REAL");
 				break;
 			case CHAR:
-				typeSym = "%c";
+				//*typeSym = "%c";
+				strncpy(symTab[iden_list->item]->typeSymbol, "%c", TYPELENGTH);
+				fprintf(stderr, "Hit CHAR");
+				break;
+			default:
+				fprintf(stderr, "Hit default");
 				break;
 		}
 
 
-		symTab[iden_list->item]->typeSymbol = typeSym;
+		//symTab[iden_list->item]->typeSymbol = *typeSym;
 }
 
 #include "lex.yy.c"
