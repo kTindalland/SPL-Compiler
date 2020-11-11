@@ -13,4 +13,4 @@ clean:
 	rm -r bin/
 
 testa: spl-parser
-	cd bin; ./spl-parser < ../spl-progs/a.spl 2> output.txt
+	cd bin; ./spl-parser < ../spl-progs/a.spl 2> output.txt > output.c; gcc -o output output.c
