@@ -14,3 +14,7 @@ clean:
 
 testa: spl-parser
 	cd bin; ./spl-parser < ../spl-progs/a.spl 2> output.txt > output.c; gcc -o output output.c
+
+
+testb: spl-parser
+	cd bin; ./spl-parser < ../spl-progs/b.spl 2> output.txt > output.c; gcc -o output output.c
