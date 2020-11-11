@@ -54,17 +54,24 @@ typedef  TREE_NODE        *TERNARY_TREE;
 
 TERNARY_TREE create_node(int,int,TERNARY_TREE,TERNARY_TREE,TERNARY_TREE);
 void PrintTree(TERNARY_TREE, int);
+void CodeGen(TERNARY_TREE);
+void GenerateForLoop(TERNARY_TREE for_node, TERNARY_TREE for_statements);
+void SymbolTablePopulateTypes(TERNARY_TREE iden_list, int type);
+void SymbolTablePopulateSingleType(TERNARY_TREE iden_list, int type);
 
 /* ------------- symbol table definition --------------------------- */
 
 struct symTabNode {
     char identifier[IDLENGTH];
+    char* typeSymbol;
 };
 
 typedef  struct symTabNode SYMTABNODE;
 typedef  SYMTABNODE        *SYMTABNODEPTR;
 
 SYMTABNODEPTR  symTab[SYMTABSIZE]; 
+
+SYMTABNODEPTR GetIdentifier(int number);
 
 int currentSymTabSize = 0;
 
@@ -86,7 +93,8 @@ int currentSymTabSize = 0;
 
 program		: identifier COLON block ENDP identifier DOT { TERNARY_TREE ParseTree;
 						ParseTree = create_node(NOTHING, PROGRAM, $1, $3, $5);
-						PrintTree(ParseTree, 0);
+						//PrintTree(ParseTree, 0);
+						CodeGen(ParseTree);
 						}
 		;
 
@@ -98,7 +106,8 @@ identifiers_list: identifier { $$ = create_node(NOTHING, IDENTIFIERS_LIST, $1, N
 		| identifiers_list COMMA identifier { $$ = create_node(NOTHING, IDENTIFIERS_LIST, $1, $3, NULL); }
 		;
 
-declaration	: identifiers_list OF TYPE type SEMICOLON { $$ = create_node(NOTHING, DECLARATION, $1, $4, NULL); }
+declaration	: identifiers_list OF TYPE type SEMICOLON { $$ = create_node(NOTHING, DECLARATION, $1, $4, NULL); 
+		SymbolTablePopulateTypes($1, $4->item); }
 		;
 
 declaration_block: declaration { $$ = create_node(NOTHING, DECLARATION_BLOCK, $1, NULL, NULL); }
@@ -123,7 +132,7 @@ statement	: assignment_statement { $$ = create_node(ASSIGNMENT_STATEMENT, STATEM
 		| read_statement { $$ = create_node(READ_STATEMENT, STATEMENT, $1, NULL, NULL); }
 		;
 
-assignment_statement: expression ASSIGN IDEN { $$ = create_node(NOTHING, ASSIGNMENT_STATEMENT, $1, NULL, NULL); }
+assignment_statement: expression ASSIGN identifier { $$ = create_node(NOTHING, ASSIGNMENT_STATEMENT, $1, $3, NULL); }
 		;
 
 if_statement	: IF conditional THEN statement_list ENDIF { $$ = create_node(NOTHING, IF_STATEMENT, $2, $4, NULL); }
@@ -169,12 +178,12 @@ expression	: term { $$ = create_node(NOTHING, EXPRESSION, $1, NULL, NULL); }
 		;
 
 term		: value { $$ = create_node(NOTHING, TERM, $1, NULL, NULL); }
-		| term TIMES value { $$ = create_node(NOTHING, TERM, $1, $3, NULL); }
-		| term DIV value { $$ = create_node(NOTHING, TERM, $1, $3, NULL); }
+		| term TIMES value { $$ = create_node(TIMES, TERM, $1, $3, NULL); }
+		| term DIV value { $$ = create_node(DIV, TERM, $1, $3, NULL); }
 		;
 
 value		: identifier { $$ = create_node(NOTHING, VALUE, $1, NULL, NULL); }
-		| constant { $$ = create_node(NOTHING, VALUE, $1, NULL, NULL); }
+		| constant { $$ = create_node(CONSTANT, VALUE, $1, NULL, NULL); }
 		| BRA expression KET { $$ = create_node(NOTHING, VALUE, $2, NULL, NULL); }
 		;
 
@@ -210,6 +219,7 @@ TERNARY_TREE create_node(int ival, int case_identifier, TERNARY_TREE p1,
     t->first = p1;
     t->second = p2;
     t->third = p3;
+
     return (t);
 }
 
@@ -339,6 +349,384 @@ void PrintTree(TERNARY_TREE t, int tabbingAmount)
 	PrintTree(t->first, tabbingAmount + 1);
 	PrintTree(t->second, tabbingAmount + 1);
 	PrintTree(t->third, tabbingAmount + 1);
+}
+
+void CodeGen(TERNARY_TREE t) {
+
+	if (t == NULL) return; // Null node
+
+	switch (t->nodeIdentifier) {
+
+		case PROGRAM:
+			printf("#include <stdio.h>\n");
+			printf("void main() {");
+			
+			CodeGen(t->second);
+
+			printf("}");
+			break;
+
+		case BLOCK:
+			CodeGen(t->first);
+			CodeGen(t->second);
+			break;
+
+		case IDENTIFIERS_LIST:
+			// If there's not a second node, first is iden, if not, first is list
+			if (t->second == NULL) { // Iden
+				CodeGen(t->first);
+			}
+			else { // Iden list, iden
+				CodeGen(t->second);
+				printf(",");
+				CodeGen(t->first);
+			}
+			break;
+
+		case DECLARATION:
+			CodeGen(t->second); // Type
+			printf(" ");
+
+			CodeGen(t->first); // Iden list
+			printf(";"); // End the line
+			break;
+
+		case DECLARATION_BLOCK:
+			CodeGen(t->first);
+			CodeGen(t->second);
+			break;
+
+		case TYPENODE:
+			switch(t->item) {
+				case CHAR:
+					printf("char");
+					break;
+				case INT:
+					printf("int");
+					break;
+				case REAL:
+					printf("double");
+
+			}
+			break;
+
+		case STATEMENT_LIST:
+			CodeGen(t->first);
+			CodeGen(t->second);
+			break;
+
+		case STATEMENT:
+			CodeGen(t->first);
+			break;
+
+		case ASSIGNMENT_STATEMENT:
+			CodeGen(t->second);
+			printf(" = ");
+			CodeGen(t->first);
+			break;
+
+		case IF_STATEMENT:
+			printf("if (");
+			CodeGen(t->first);
+			printf(") {");
+			CodeGen(t->second);
+			printf("}");
+
+			if( t->third != NULL) {
+				printf("else {");
+				CodeGen(t->third);
+				printf("}");
+			}
+			
+			break;
+
+		case DO_STATEMENT:
+			printf("do {");
+			CodeGen(t->first);
+			printf("} while(");
+			CodeGen(t->second);
+			printf(");");
+
+			break;
+
+		case WHILE_STATEMENT:
+			printf("while (");
+			CodeGen(t->first);
+			printf(") {");
+			CodeGen(t->second);
+			printf("}");
+			break;
+
+		case FOR_STATEMENT:
+			GenerateForLoop(t, t->second);
+			break;
+
+		case WRITE_STATEMENT:
+			if (t->first == NULL) {
+				// NEWL
+				printf("printf(\"\\n\");");
+			}
+			else {
+				// Normal Write
+				CodeGen(t->first);
+
+			}
+			break;
+
+		case OUTPUT_LIST:
+			if (t->second == NULL) { // Single Value
+				if (t->first->item == CONSTANT) { // If a constant
+					printf("printf(\"");
+					CodeGen(t->first->first);
+					printf("\");");
+				}
+				else { // if a iden
+					// Get Iden
+					SYMTABNODEPTR iden = symTab[t->first->first->item];
+					printf("printf(\"");
+					printf(iden->typeSymbol);
+					printf("\", ");
+					printf(iden->identifier);
+					printf(");");
+				}
+			}
+			else { // Still a list
+				
+				CodeGen(t->first);
+				if (t->second->item == CONSTANT) { // If a constant
+					printf("printf(\"");
+					CodeGen(t->second->first);
+					printf("\");");
+				}
+				else { // if a iden
+					// Get Iden
+					SYMTABNODEPTR iden = symTab[t->second->first->item];
+					printf("printf(\"");
+					printf(iden->typeSymbol);
+					printf("\", ");
+					printf(iden->identifier);
+					printf(");");
+				}
+
+			}
+			break;
+
+		case READ_STATEMENT:
+			printf("scanf(\"");
+			printf("%s\",", symTab[t->item]->typeSymbol);    /* Type */
+			printf("&%s);",symTab[t->item]->identifier);    /* Variable */
+			break;
+		
+		case CONDITIONAL:
+			if (t->item == NOT) {
+				printf("!(");
+				CodeGen(t->first);
+				printf(")");
+			}
+			else if (t->item == AND || t->item == OR) {
+				printf("(");
+				CodeGen(t->first);
+				printf(")");
+
+				if (t->item == AND) { printf("&&"); }
+				else { printf("||"); }
+
+				printf("(");
+				CodeGen(t->second);
+				printf(")");
+
+			}
+			else { // Normal
+				printf("(");
+				CodeGen(t->first);
+				printf(")");
+				
+				CodeGen(t->second);
+
+				printf("(");
+				CodeGen(t->third);
+				printf(")");
+			}
+
+			break;
+
+		case COMPARATOR:
+			switch (t->item) {
+
+				case EQUAL:
+					printf("=");
+					break;
+				case NOTEQ:
+					printf("!=");
+					break;
+				case LESSTHAN:
+					printf("<");
+					break;
+				case MORETHAN:
+					printf(">");
+					break;
+				case LESSEQUAL:
+					printf("<=");
+					break;
+				case MOREEQUAL:
+					printf(">=");
+					break;
+				
+
+			}
+			break;
+
+		case EXPRESSION:
+			if (t->second == NULL) { // Term
+				CodeGen(t->first);
+			}
+			else {
+				printf("(");
+				CodeGen(t->first);
+
+				if (t->item == PLUS) {
+					printf(") + (");
+				} else {
+					printf(") - (");
+				}
+
+				CodeGen(t->second);
+				printf(")");
+					
+			}
+			break;
+
+		case TERM:
+			if (t->second == NULL) { // Value
+				CodeGen(t->first);
+			}
+			else {
+				printf("(");
+				CodeGen(t->first);
+
+				if (t->item == TIMES) {
+					printf(") * (");
+				} else {
+					printf(") / (");
+				}
+
+				CodeGen(t->second);
+				printf(")");
+					
+			}
+			break;
+			
+
+		case VALUE:
+			printf("(");
+			CodeGen(t->first);
+			printf(")");
+			break;
+
+
+		case INTEGER_NODE:
+			printf("%d", t->item);
+			break;
+
+		case REAL_NODE:
+			printf("%d.%d", t->first->item, t->second->item);
+			break;
+
+		case NUMBER_CONSTANT:
+			if (t->item == MINUS) printf("-");
+			CodeGen(t->first);
+			break;
+
+		case CONSTANT:
+			if (t->first != NULL) { // Number
+				CodeGen(t->first);
+			} else { // Char
+				printf("%c", t->item);
+			}
+			break;
+
+		case IDENNODE: ;
+			SYMTABNODEPTR iden = GetIdentifier(t->item);
+			printf("%s", iden->identifier);
+			break;
+
+
+	}
+
+}
+
+
+SYMTABNODEPTR GetIdentifier(int number) {
+	if (number < SYMTABSIZE) {
+		return symTab[number];
+	}
+	else {
+		fprintf(stderr, "Identifier not found in symbol table!");
+		return symTab[0];
+	}
+
+}
+
+void GenerateForLoop(TERNARY_TREE for_node, TERNARY_TREE for_statements) {
+
+	TERNARY_TREE ident = for_node->first;
+	TERNARY_TREE statements = for_node->third;
+
+	TERNARY_TREE is = for_statements->first;
+	TERNARY_TREE by = for_statements->second;
+	TERNARY_TREE to = for_statements->third;
+
+	printf("register int _by;");
+	printf("for (");
+	CodeGen(ident);
+	printf(" = (");
+	CodeGen(is);
+	printf("); _by = (");
+	CodeGen(by);
+	printf("), (");
+	CodeGen(ident);
+	printf("-(");
+	CodeGen(to);
+	printf("))*((_by > 0) - (_by < 0)) <= 0;");
+	CodeGen(ident);
+	printf("+= _by) {");
+
+	CodeGen(statements);
+
+	printf("}");
+
+}
+
+void SymbolTablePopulateTypes(TERNARY_TREE iden_list, int type) {
+
+	if (iden_list->second == NULL) { // Single Iden
+		SymbolTablePopulateSingleType(iden_list->first, type);
+	}
+	else { // Still a list
+		SymbolTablePopulateTypes(iden_list->first, type);
+		SymbolTablePopulateSingleType(iden_list->second, type);
+	}
+
+}
+
+void SymbolTablePopulateSingleType(TERNARY_TREE iden_list, int type) {
+
+		char* typeSym;
+		
+		switch(type) {
+			case INT:
+				typeSym = "%d";
+				break;
+			case REAL:
+				typeSym = "%lf";
+				break;
+			case CHAR:
+				typeSym = "%c";
+				break;
+		}
+
+
+		symTab[iden_list->item]->typeSymbol = typeSym;
 }
 
 #include "lex.yy.c"

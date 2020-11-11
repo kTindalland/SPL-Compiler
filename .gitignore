@@ -1,3 +1,4 @@
 source/lex.yy.c
 source/spl.tab.c
 bin/
+*.swp
