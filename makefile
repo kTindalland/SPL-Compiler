@@ -1,15 +1,15 @@
-spl-parser: source/spl.tab.c
+spl-parser: build/spl.tab.c
 	mkdir -p bin
-	gcc source/spl.c source/spl.tab.c -lfl -o bin/spl-parser -ggdb
+	gcc source/source/*.c build/spl.tab.c -lfl -o bin/spl-parser -ggdb -I source/headers/ -I build/
 
-source/spl.tab.c: source/lex.yy.c
-	cd source; bison spl.y;
+build/spl.tab.c: build/lex.yy.c
+	mkdir -p build; cd build; bison ../source/source/spl.y;
 
-source/lex.yy.c:
-	cd source; flex spl.l;
+build/lex.yy.c:
+	mkdir -p build; cd build; flex ../source/source/spl.l;
 
 clean:
-	cd source; rm lex.yy.c spl.tab.c;
+	rm -r build/
 	rm -r bin/
 
 testa: spl-parser

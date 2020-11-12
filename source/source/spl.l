@@ -9,10 +9,7 @@
 #ifndef PRINT
 /* Declare Symbol Table Type and Array as imported types */
 
-#include <string.h>
-extern SYMTABNODEPTR symTab[SYMTABSIZE];
-extern int currentSymTabSize;
-int installId(char *);
+#include "symbolTable.h"
 #endif
 %}
 delim [ \t\r\n]
@@ -95,55 +92,5 @@ REAL RETURN(vartype, REAL);
 */
 
 
-SYMTABNODEPTR newSymTabNode()
-{
-    return ((SYMTABNODEPTR)malloc(sizeof(SYMTABNODE)));
-}
-
-int lookup(char *s)
-{
-    extern SYMTABNODEPTR symTab[SYMTABSIZE];
-    extern int currentSymTabSize;
-    int i;
-
-    for(i=0; i<currentSymTabSize; i++)
-    {
-        if(strncmp(s,symTab[i]->identifier,IDLENGTH) == 0)
-        {
-            return (i);
-        }
-    }
-    return (-1);    
-}
-
-/* Look up an identifier in the symbol table, if its there return
-   its index.  If its not there, put it in the end position,
-   as long as the table isn't full, and return its index.
-*/
-
-int installId(char *id) 
-{
-    extern SYMTABNODEPTR symTab[SYMTABSIZE]; 
-    extern int currentSymTabSize;
-    int index;
-
-    index = lookup(id);
-    if (index >= 0)
-    {
-        return (index);
-    }
-    else 
-       if (currentSymTabSize >= SYMTABSIZE) 
-          /* SYMTAB is full */
-          return (NOTHING) ;
-    else
-    {
-       symTab[currentSymTabSize] = newSymTabNode();
-       /* Recommended code for preventing buffer overrun on bounded strings */
-       strncpy(symTab[currentSymTabSize]->identifier,id,IDLENGTH);
-       symTab[currentSymTabSize]->identifier[IDLENGTH-1] = '\0';
-       return(currentSymTabSize++);
-    }
-}
 #endif
 

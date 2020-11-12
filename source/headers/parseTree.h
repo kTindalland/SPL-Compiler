@@ -1,0 +1,20 @@
+#ifndef __PARSETREE
+#define __PARSETREE 1
+
+struct treeNode {
+    int  item;
+    int  nodeIdentifier;
+    struct treeNode *first;
+    struct treeNode *second;
+    struct treeNode *third;
+  };
+
+typedef  struct treeNode TREE_NODE;
+typedef  TREE_NODE        *TERNARY_TREE;
+
+
+enum ParseTreeNodeType { PROGRAM, BLOCK, NUMBER_CONSTANT, CONSTANT, VALUE, EXPRESSION, TERM, COMPARATOR, CONDITIONAL, OUTPUT_LIST, FOR_STATEMENT, WHILE_STATEMENT, FOR_EXPRESSIONS, DO_STATEMENT, IF_STATEMENT, ASSIGNMENT_STATEMENT, STATEMENT_LIST, TYPENODE, DECLARATION_BLOCK, WRITE_STATEMENT, READ_STATEMENT, STATEMENT, DECLARATION, IDENTIFIERS_LIST, INTEGER_NODE, REAL_NODE, IDENNODE } ;  
+
+TERNARY_TREE create_node(int ival, int case_identifier, TERNARY_TREE p1, TERNARY_TREE p2, TERNARY_TREE p3);
+
+#endif
