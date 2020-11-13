@@ -495,11 +495,12 @@ void CodeGen(TERNARY_TREE t) {
 				}
 				else { // if a iden
 					// Get Iden
-					SYMTABNODEPTR iden = symTab[t->first->first->item];
+					TERNARY_TREE iden = t->first->first;
+
 					printf("printf(\"");
-					printf(iden->typeSymbol);
+					printf("%%%s", symTab[iden->item]->typeSymbol);
 					printf("\", ");
-					printf(iden->identifier);
+					printf("%s", symTab[iden->item]->identifier);
 					printf(");");
 				}
 			}
@@ -512,12 +513,13 @@ void CodeGen(TERNARY_TREE t) {
 					printf("\");");
 				}
 				else { // if a iden
-					// Get Iden
-					SYMTABNODEPTR iden = symTab[t->second->first->item];
+					// Get Iden 
+					TERNARY_TREE iden = t->second->first;
+
 					printf("printf(\"");
-					printf(iden->typeSymbol);
+					printf("%%%s", symTab[iden->item]->typeSymbol);
 					printf("\", ");
-					printf(iden->identifier);
+					printf("%s", symTab[iden->item]->identifier);
 					printf(");");
 				}
 
@@ -527,7 +529,7 @@ void CodeGen(TERNARY_TREE t) {
 		case READ_STATEMENT:
 			printf("scanf(\"");
 			char* typesymbol = GetType(t->first->item);
-			printf("%s\",", typesymbol);    /* Type */
+			printf(" %%%s\",", typesymbol);    /* Type */
 
 			char* idensymbol = GetIdentifier(t->first->item);
 			printf("&%s);",idensymbol);    /* Variable */
@@ -570,7 +572,7 @@ void CodeGen(TERNARY_TREE t) {
 			switch (t->item) {
 
 				case EQUAL:
-					printf("=");
+					printf("==");
 					break;
 				case NOTEQ:
 					printf("!=");
@@ -739,17 +741,17 @@ void SymbolTablePopulateSingleType(TERNARY_TREE iden_list, int type) {
 		
 		switch(type) {
 			case INT:
-				strncpy(symTab[iden_list->item]->typeSymbol, "%d", TYPELENGTH);
+				strncpy(symTab[iden_list->item]->typeSymbol, "d", TYPELENGTH);
 				fprintf(stderr, "Hit INT");
 				break;
 			case REAL:
 				//*typeSym = "%lf";
-				strncpy(symTab[iden_list->item]->typeSymbol, "%lf", TYPELENGTH);
+				strncpy(symTab[iden_list->item]->typeSymbol, "lf", TYPELENGTH);
 				fprintf(stderr, "Hit REAL");
 				break;
 			case CHAR:
 				//*typeSym = "%c";
-				strncpy(symTab[iden_list->item]->typeSymbol, "%c", TYPELENGTH);
+				strncpy(symTab[iden_list->item]->typeSymbol, "c", TYPELENGTH);
 				fprintf(stderr, "Hit CHAR");
 				break;
 			default:
