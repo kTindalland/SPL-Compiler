@@ -18,3 +18,6 @@ testa: spl-parser
 
 testb: spl-parser
 	cd bin; ./spl-parser < ../spl-progs/b.spl 2> output.txt > output.c; gcc -o output output.c
+
+testc: spl-parser
+	cd bin; ./spl-parser < ../spl-progs/c.spl 2> output.txt > output.c; gcc -o output output.c
