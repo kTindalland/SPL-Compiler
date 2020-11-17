@@ -73,8 +73,8 @@ typedef  SYMTABNODE        *SYMTABNODEPTR;
 
 SYMTABNODEPTR  symTab[SYMTABSIZE]; 
 
-char* GetIdentifier(int number);
-char* GetType(int number);
+void GetIdentifier(int number, char* result);
+void GetType(int number, char* result);
 
 int currentSymTabSize = 0;
 
@@ -495,6 +495,7 @@ void CodeGen(TERNARY_TREE t) {
 				}
 				else { // if a iden
 					// Get Iden
+					/* WORKING CODE 
 					TERNARY_TREE iden = t->first->first;
 
 					printf("printf(\"");
@@ -502,6 +503,22 @@ void CodeGen(TERNARY_TREE t) {
 					printf("\", ");
 					printf("%s", symTab[iden->item]->identifier);
 					printf(");");
+
+					*/
+					char identifierString[IDLENGTH];
+					char identifierType[TYPELENGTH];
+
+					TERNARY_TREE iden = t->first->first;
+
+					GetIdentifier(iden->item, identifierString);
+					GetType(iden->item, identifierType);
+
+					printf("printf(\"");
+					printf("%%%s", identifierType);
+					printf("\", ");
+					printf("%s", identifierString);
+					printf(");");
+
 				}
 			}
 			else { // Still a list
@@ -528,10 +545,12 @@ void CodeGen(TERNARY_TREE t) {
 
 		case READ_STATEMENT:
 			printf("scanf(\"");
-			char* typesymbol = GetType(t->first->item);
+			char typesymbol[TYPELENGTH];
+			GetType(t->first->item, typesymbol);
 			printf(" %%%s\",", typesymbol);    /* Type */
 
-			char* idensymbol = GetIdentifier(t->first->item);
+			char idensymbol[IDLENGTH];
+			GetIdentifier(t->first->item, idensymbol);
 			printf("&%s);",idensymbol);    /* Variable */
 			break;
 		
@@ -664,7 +683,8 @@ void CodeGen(TERNARY_TREE t) {
 			break;
 
 		case IDENNODE: ;
-			char* iden = GetIdentifier(t->item);
+			char iden[IDLENGTH];
+			GetIdentifier(t->item, iden);
 			printf("%s", iden);
 			break;
 
@@ -674,22 +694,22 @@ void CodeGen(TERNARY_TREE t) {
 }
 
 
-char* GetIdentifier(int number) {
+void GetIdentifier(int number, char* result) {
 	if (number < SYMTABSIZE) {
-		return symTab[number]->identifier;
+		strncpy(result, symTab[number]->identifier, IDLENGTH);
 	}
 	else {
-		return "Identifier not found!";
+		strncpy(result, "IdenNotFound", IDLENGTH);
 	}
 
 }
 
-char* GetType(int number) {
+void GetType(int number, char* result) {
 	if (number < SYMTABSIZE) {
-		return symTab[number]->typeSymbol;
+		strncpy(result, symTab[number]->typeSymbol, TYPELENGTH);
 	}
 	else {
-		return "notfound";
+		strncpy(result, "NotFound", TYPELENGTH);
 	}
 }
 
@@ -737,30 +757,21 @@ void SymbolTablePopulateTypes(TERNARY_TREE iden_list, int type) {
 
 void SymbolTablePopulateSingleType(TERNARY_TREE iden_list, int type) {
 
-		char typeSym[4];
-		
 		switch(type) {
 			case INT:
 				strncpy(symTab[iden_list->item]->typeSymbol, "d", TYPELENGTH);
-				fprintf(stderr, "Hit INT");
 				break;
 			case REAL:
-				//*typeSym = "%lf";
 				strncpy(symTab[iden_list->item]->typeSymbol, "lf", TYPELENGTH);
-				fprintf(stderr, "Hit REAL");
 				break;
 			case CHAR:
-				//*typeSym = "%c";
 				strncpy(symTab[iden_list->item]->typeSymbol, "c", TYPELENGTH);
-				fprintf(stderr, "Hit CHAR");
 				break;
 			default:
-				fprintf(stderr, "Hit default");
+				fprintf(stderr, "DEBUG: Hit default case in SymbolTablePopulateSingleType. Type = %d\n", type);
+				strncpy(symTab[iden_list->item]->typeSymbol, "notype", TYPELENGTH);
 				break;
 		}
-
-
-		//symTab[iden_list->item]->typeSymbol = *typeSym;
 }
 
 #include "lex.yy.c"
