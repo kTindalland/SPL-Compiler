@@ -1,6 +1,6 @@
 spl-parser: source/spl.tab.c
 	mkdir -p bin
-	gcc source/spl.c source/spl.tab.c -lfl -o bin/spl-parser -ggdb
+	gcc source/spl.c source/spl.tab.c -lfl -o bin/spl-parser -ggdb -Wno-cpp
 
 source/spl.tab.c: source/lex.yy.c
 	cd source; bison spl.y;
@@ -21,3 +21,7 @@ testb: spl-parser
 
 testc: spl-parser
 	cd bin; ./spl-parser < ../spl-progs/c.spl 2> output.txt > output.c; gcc -o output output.c
+
+teste: spl-parser
+	cd bin; ./spl-parser < ../spl-progs/e.spl 2> output.txt > output.c; gcc -o output output.c
+	
