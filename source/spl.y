@@ -61,6 +61,13 @@ void SymbolTablePopulateTypes(TERNARY_TREE iden_list, int type);
 void SymbolTablePopulateSingleType(TERNARY_TREE iden_list, int type);
 void GetExpressionType(TERNARY_TREE, char*);
 
+void ScanTreeForForLoops(TERNARY_TREE);
+void GenForDeclarations();
+void GetCurrentForByVariable(char*);
+
+int _totalFors;
+int _usedFors;
+
 /* ------------- symbol table definition --------------------------- */
 
 struct symTabNode {
@@ -375,13 +382,20 @@ void CodeGen(TERNARY_TREE t) {
 	switch (t->nodeIdentifier) {
 
 		case PROGRAM:
+			_totalFors = 0;
+			_usedFors = 0;
+
+			ScanTreeForForLoops(t);
+
+
 			printf("#include <stdio.h>\n");
-			printf("int _by;");
 			printf("int main(int argc, char* argv[]) {\n");
+
+			GenForDeclarations();
 			
 			CodeGen(t->second);
 
-			printf("\nreturn 0; \n}");
+			printf("\nreturn 0; \n}\n");
 			break;
 
 		case BLOCK:
@@ -406,7 +420,7 @@ void CodeGen(TERNARY_TREE t) {
 			printf(" ");
 
 			CodeGen(t->first); /* Iden list */
-			printf(";"); /* End the line */
+			printf(";\n"); /* End the line */
 			break;
 
 		case DECLARATION_BLOCK:
@@ -435,6 +449,7 @@ void CodeGen(TERNARY_TREE t) {
 
 		case STATEMENT:
 			CodeGen(t->first);
+			printf("\n");
 			break;
 
 		case ASSIGNMENT_STATEMENT:
@@ -447,12 +462,12 @@ void CodeGen(TERNARY_TREE t) {
 		case IF_STATEMENT:
 			printf("if (");
 			CodeGen(t->first);
-			printf(") {");
+			printf(") {\n");
 			CodeGen(t->second);
 			printf("}");
 
 			if( t->third != NULL) {
-				printf("else {");
+				printf("else {\n");
 				CodeGen(t->third);
 				printf("}");
 			}
@@ -460,7 +475,7 @@ void CodeGen(TERNARY_TREE t) {
 			break;
 
 		case DO_STATEMENT:
-			printf("do {");
+			printf("do {\n");
 			CodeGen(t->first);
 			printf("} while(");
 			CodeGen(t->second);
@@ -471,7 +486,7 @@ void CodeGen(TERNARY_TREE t) {
 		case WHILE_STATEMENT:
 			printf("while (");
 			CodeGen(t->first);
-			printf(") {");
+			printf(") {\n");
 			CodeGen(t->second);
 			printf("}");
 			break;
@@ -483,7 +498,7 @@ void CodeGen(TERNARY_TREE t) {
 		case WRITE_STATEMENT:
 			if (t->first == NULL) {
 				/* NEWL */
-				printf("printf(\"\\n\");");
+				printf("printf(\"\\n\");\n");
 			}
 			else {
 				/* Normal Write */
@@ -497,7 +512,7 @@ void CodeGen(TERNARY_TREE t) {
 				if (t->first->item == CONSTANT) { /* If a constant */
 					printf("printf(\"");
 					CodeGen(t->first->first);
-					printf("\");");
+					printf("\");\n");
 				}
 				else if (t->first->item == EXPRESSION) {
 					/* Expression */
@@ -508,7 +523,7 @@ void CodeGen(TERNARY_TREE t) {
 					printf("printf(\"%%%s\",", expressionString);
 
 					CodeGen(t->first->first);
-					printf(");");
+					printf(");\n");
 
 
 				}
@@ -526,7 +541,7 @@ void CodeGen(TERNARY_TREE t) {
 					printf("%%%s", identifierType);
 					printf("\", ");
 					printf("%s", identifierString);
-					printf(");");
+					printf(");\n");
 
 				}
 			}
@@ -536,7 +551,7 @@ void CodeGen(TERNARY_TREE t) {
 				if (t->second->item == CONSTANT) { /* If a constant */
 					printf("printf(\"");
 					CodeGen(t->second->first);
-					printf("\");");
+					printf("\");\n");
 				}
 				else { /* if a iden */
 					/* Get Iden */
@@ -546,7 +561,7 @@ void CodeGen(TERNARY_TREE t) {
 					printf("%%%s", symTab[iden->item]->typeSymbol);
 					printf("\", ");
 					printf("%s", symTab[iden->item]->identifier);
-					printf(");");
+					printf(");\n");
 				}
 
 			}
@@ -721,6 +736,7 @@ void GetType(int number, char* result) {
 
 void GenerateForLoop(TERNARY_TREE for_node, TERNARY_TREE for_statements) {
 
+	char byVar[IDLENGTH];
 	TERNARY_TREE ident = for_node->first;
 	TERNARY_TREE statements = for_node->third;
 
@@ -728,19 +744,22 @@ void GenerateForLoop(TERNARY_TREE for_node, TERNARY_TREE for_statements) {
 	TERNARY_TREE by = for_statements->second;
 	TERNARY_TREE to = for_statements->third;
 
+	GetCurrentForByVariable(byVar);
+
 	printf("for (");
 	CodeGen(ident);
 	printf(" = (");
 	CodeGen(is);
-	printf("); _by = (");
+	printf("); %s = (", byVar);
+	
 	CodeGen(by);
 	printf("), (");
 	CodeGen(ident);
 	printf("-(");
 	CodeGen(to);
-	printf("))*((_by > 0) - (_by < 0)) <= 0;");
+	printf("))*((%s > 0) - (%s < 0)) <= 0;", byVar, byVar);
 	CodeGen(ident);
-	printf("+= _by) {");
+	printf("+= %s) {\n", byVar);
 
 	CodeGen(statements);
 
@@ -828,5 +847,32 @@ void GetExpressionType(TERNARY_TREE t, char* typeString) {
 	}
 
 }
+
+void ScanTreeForForLoops(TERNARY_TREE t) {
+	
+	if (t == NULL) return;
+
+	if (t->nodeIdentifier == FOR_STATEMENT) _totalFors++;
+
+	ScanTreeForForLoops(t->first);
+	ScanTreeForForLoops(t->second);
+	ScanTreeForForLoops(t->third);
+}
+
+void GenForDeclarations() {
+	int i;
+
+	for (i = 0; i < _totalFors; i++) {
+		printf("register int _by%d;\n", i);
+	}
+}
+
+void GetCurrentForByVariable(char* result) {
+	
+	sprintf(result, "_by%d", _usedFors);
+	_usedFors++;
+
+}
+
 
 #include "lex.yy.c"
