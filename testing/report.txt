@@ -1,0 +1,126 @@
+
+
+
+------------------------
+Testing all compilers...
+------------------------
+
+Testing compiler: spl-parser
+Running test: Test028 Passed	[ANSI compliant]
+Running test: Test143 Failed	[ANSI compliant] - Test output different to expected output
+Running test: Test083 Passed	[ANSI compliant]
+Running test: Test006 Passed?	[ No file made ] - Error test - SPL file should not compile. Incomplete or empty C file generated, possible abort on error?
+Running test: Test091 Passed	[ANSI compliant]
+Running test: Test153 Passed	[ANSI compliant]
+Running test: Test025 Passed	[ANSI compliant] - Optional test - SPL compiler may choose to compile or not, and chose to compile
+Running test: Test096 Passed	[ANSI compliant]
+Running test: Test049 Passed	[ANSI compliant] - Warning test - SPL compiler can compile this code, but should produce warnings
+Running test: Test099 Passed?	[ No file made ] - Error test - SPL file should not compile. Incomplete or empty C file generated, possible abort on error?
+Running test: Test050 Failed	[Built bad SPL!] - SPL file is invalid and should not have compiled, but it did
+Running test: Test007 Passed?	[ No file made ] - Error test - SPL file should not compile. Incomplete or empty C file generated, possible abort on error?
+Running test: Test008 Passed	[ANSI compliant]
+Running test: Test053 Passed	[ANSI compliant] - Optional test - SPL compiler may choose to compile or not, and chose to compile
+Running test: Test068 Passed	[ANSI compliant]
+Running test: Test048 Passed	[ANSI compliant] - Warning test - SPL compiler can compile this code, but should produce warnings
+Running test: Test052 Failed	[ Built bad C! ] - Could not compile C file with GCC
+Running test: Test104 Passed	[ANSI compliant]
+Running test: Test017 Passed	[ANSI compliant]
+Running test: Test024 Passed	[ANSI compliant] - Optional test - SPL compiler may choose to compile or not, and chose to compile
+Running test: Test097 Passed	[ANSI compliant]
+Running test: Test160 Passed	[ANSI compliant]
+Running test: Test036 Passed	[ANSI compliant] - Optional test - SPL compiler may choose to compile or not, and chose to compile
+Running test: Test089 Passed	[ANSI compliant]
+Running test: Test158 Passed	[ANSI compliant]
+Running test: Test059 Passed	[ANSI compliant]
+Running test: Test072 Passed	[ANSI compliant]
+Running test: Test021 Passed	[ANSI compliant]
+Running test: Test088 Passed	[ANSI compliant]
+Running test: Test041 Passed	[ANSI compliant]
+Running test: Test054 Failed	[ Built bad C! ] - Could not compile C file with GCC
+Running test: Test074 Passed	[ANSI compliant]
+Running test: Test026 Passed	[ANSI compliant]
+Running test: Test127 Failed	[ANSI compliant] - Test output different to expected output
+Running test: Test076 Passed	[ANSI compliant]
+Running test: Test134 Failed	[ANSI compliant] - Test output different to expected output
+Running test: Test061 Failed	[ANSI compliant] - Test output different to expected output
+Running test: Test103 Passed	[ANSI compliant]
+Running test: Test081 Passed	[ANSI compliant]
+Running test: Test155 Passed	[ANSI compliant]
+Running test: Test037 Failed	[Built bad SPL!] - SPL file is invalid and should not have compiled, but it did
+Running test: Test033 Passed	[ANSI compliant] - Warning test - SPL compiler can compile this code, but should produce warnings
+Running test: Test069 Passed	[ANSI compliant]
+Running test: Test151 Passed	[ANSI compliant]
+Running test: Test117 Passed	[ANSI compliant]
+Running test: Test079 Passed	[ANSI compliant]
+Running test: Test010 Passed	[ANSI compliant]
+Running test: Test016 Passed	[ANSI compliant]
+Running test: Test121 Failed	[ANSI compliant] - Test output different to expected output
+Running test: Test051 Failed	[ Built bad C! ] - Could not compile C file with GCC
+Running test: Test075 Passed	[ANSI compliant]
+Running test: Test110 Passed	[ANSI compliant] - Optional test - SPL compiler may choose to compile or not, and chose to compile
+Running test: Test131 Failed	[ANSI compliant] - Test output different to expected output
+Running test: Test003 Passed	[ANSI compliant]
+Running test: Test113 Passed	[ANSI compliant] - Optional test - SPL compiler may choose to compile or not, and chose to compile
+Running test: Test039 Passed	[ANSI compliant] - Warning test - SPL compiler can compile this code, but should produce warnings
+Running test: Test146 Passed	[ANSI compliant]
+Running test: Test123 Passed?	[ No file made ] - Warning test (may codegen or not) - incomplete or empty C file generated, possible abort on error?
+Running test: Test029 Passed	[ANSI compliant] - Optional test - SPL compiler may choose to compile or not, and chose to compile
+Running test: Test080 Passed?	[ No file made ] - Error test - SPL file should not compile. Incomplete or empty C file generated, possible abort on error?
+Running test: Test027 Passed	[ANSI compliant]
+Running test: Test011 Passed?	[ No file made ] - Error test - SPL file should not compile. Incomplete or empty C file generated, possible abort on error?
+Running test: Test015 Passed	[ANSI compliant]
+Running test: Test066 Passed	[ANSI compliant]
+Running test: Test004 Passed?	[ No file made ] - Warning test (may codegen or not) - incomplete or empty C file generated, possible abort on error?
+Running test: Test065 Passed	[ANSI compliant]
+Running test: Test112 Passed	[ANSI compliant] - Optional test - SPL compiler may choose to compile or not, and chose to compile
+Running test: Test145 Failed	[ANSI compliant] - Test output different to expected output
+Running test: Test046 Passed	[ANSI compliant] - Warning test - SPL compiler can compile this code, but should produce warnings
+Running test: Test152 Passed	[ANSI compliant]
+Running test: Test122 Failed	[ANSI compliant] - Test output different to expected output
+Running test: Test092 Passed	[ANSI compliant]
+Running test: Test073 Passed	[ANSI compliant]
+Running test: Test040 Passed	[ANSI compliant]
+Running test: Test102 Passed	[ANSI compliant]
+Running test: Test094 Passed	[ANSI compliant]
+Running test: Test105 Passed	[ANSI compliant]
+Running test: Test056 Passed	[ANSI compliant]
+Running test: Test149 Passed	[ANSI compliant]
+Running test: Test093 Passed	[ANSI compliant]
+Running test: Test005 Passed?	[ No file made ] - Error test - SPL file should not compile. Incomplete or empty C file generated, possible abort on error?
+Running test: Test111 Passed	[ANSI compliant] - Optional test - SPL compiler may choose to compile or not, and chose to compile
+Running test: Test030 Passed?	[ No file made ] - Error test - SPL file should not compile. Incomplete or empty C file generated, possible abort on error?
+Running test: Test063 Passed?	[ No file made ] - Error test - SPL file should not compile. Incomplete or empty C file generated, possible abort on error?
+Running test: Test107 Passed	[ANSI compliant]
+Running test: Test100 Passed	[ANSI compliant]
+Running test: Test057 Passed	[ANSI compliant]
+Running test: Test058 Passed	[ANSI compliant]
+Running test: Test144 Failed	[ANSI compliant] - Test output different to expected output
+Running test: Test002 Passed	[ANSI compliant] - Warning test - SPL compiler can compile this code, but should produce warnings
+Running test: Test064 Failed	[ANSI compliant] - Test output different to expected output
+Running test: Test078 Passed	[ANSI compliant]
+Running test: Test013 Passed	[ANSI compliant]
+Running test: Test129 Failed	[ANSI compliant] - Test output different to expected output
+Running test: Test019 Passed	[ANSI compliant]
+Running test: Test138 Failed	[ANSI compliant] - Test output different to expected output
+Running test: Test109 Passed	[ANSI compliant]
+Running test: Test043 Passed	[ANSI compliant]
+Running test: Test090 Passed	[ANSI compliant]
+Running test: Test067 Passed	[ANSI compliant]
+Running test: Test147 Passed	[ANSI compliant]
+Running test: Test126 Failed	[ANSI compliant] - Test output different to expected output
+Running test: Test154 Passed	[ANSI compliant]
+Running test: Test084 Passed	[ANSI compliant]
+Running test: Test045 Passed	[ANSI compliant]
+Running test: Test130 Failed	[ANSI compliant] - Test output different to expected output
+Running test: Test141 Failed	[ANSI compliant] - Test output different to expected output
+Running test: Test055 Passed	[ANSI compliant]
+Running test: Test095 Passed	[ANSI compliant]
+Running test: Test150 Passed	[ANSI compliant]
+Running test: Test014 Passed?	[ No file made ] - Error test - SPL file should not compile. Incomplete or empty C file generated, possible abort on error?
+Running test: Test009 Passed	[ANSI compliant]
+Running test: Test157 Passed	[ANSI compliant] - Optional test - SPL compiler may choose to compile or not, and chose to compile
+Running test: Test135 Failed	[ANSI compliant] - Test output different to expected output
+Running test: Test060 Failed	[ANSI compliant] - Test output different to expected output
+Running test: Test098 Passed	[ANSI compliant]
+Running test: Test118 Passed	[ANSI compliant]
+Running test: Test114 
