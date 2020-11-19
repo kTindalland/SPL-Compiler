@@ -2,4 +2,7 @@ source/lex.yy.c
 source/spl.tab.c
 bin/
 *.swp
+<<<<<<< HEAD
 testing/Tests/*.log
+=======
+>>>>>>> c49bed6fd46a8e079f8e20e93f89fd044538c7e7

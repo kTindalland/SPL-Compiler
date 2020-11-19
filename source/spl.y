@@ -677,7 +677,13 @@ void CodeGen(TERNARY_TREE t) {
 			
 
 		case VALUE:
+<<<<<<< HEAD
 			CodeGen(t->first);
+=======
+			printf("(");
+			CodeGen(t->first);
+			printf(")");
+>>>>>>> c49bed6fd46a8e079f8e20e93f89fd044538c7e7
 			break;
 
 
@@ -698,7 +704,11 @@ void CodeGen(TERNARY_TREE t) {
 			if (t->first != NULL) { /* Number */
 				CodeGen(t->first);
 			} else { /* Char */
+<<<<<<< HEAD
 				printf("'%c'", t->item);
+=======
+				printf("%c", t->item);
+>>>>>>> c49bed6fd46a8e079f8e20e93f89fd044538c7e7
 			}
 			break;
 
