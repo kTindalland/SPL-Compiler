@@ -73,6 +73,10 @@ REAL RETURN(vartype, REAL);
 	
 	#ifndef PRINT
 	yylval.iVal = atoi(yytext);
+
+	if (yylval.iVal < 0) {
+		yylval.iVal = yylval.iVal * -1;
+	}
 	#endif
 
 	RETURN(number, NUMBER);
@@ -138,6 +142,7 @@ int installId(char *id)
     extern SYMTABNODEPTR symTab[SYMTABSIZE]; 
     extern int currentSymTabSize;
     int index;
+    char converted_identifier[IDLENGTH];
 
     index = lookup(id);
     if (index >= 0)
@@ -154,6 +159,14 @@ int installId(char *id)
        /* Recommended code for preventing buffer overrun on bounded strings */
        strncpy(symTab[currentSymTabSize]->identifier,id,IDLENGTH);
        symTab[currentSymTabSize]->identifier[IDLENGTH-1] = '\0';
+
+	/* Set is_declared */
+	symTab[currentSymTabSize]->is_declared = 0;
+	
+	/* Set new variable name */
+	sprintf(converted_identifier, "var%d", currentSymTabSize);
+	strncpy(symTab[currentSymTabSize]->new_identifier, converted_identifier, IDLENGTH);
+
        return(currentSymTabSize++);
     }
 }

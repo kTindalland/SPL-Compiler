@@ -1,3 +1,3 @@
 #!/bin/bash
 
-grep Failed report.txt
+grep Failed $1

@@ -68,11 +68,17 @@ void GetCurrentForByVariable(char*);
 int _totalFors;
 int _usedFors;
 
+unsigned char GetIfIdenDeclared(TERNARY_TREE idennode);
+void PrintIdentifierForDeclaration(TERNARY_TREE idennode);
+void PrintIdentifierForDeclaration(TERNARY_TREE idennode);
+
 /* ------------- symbol table definition --------------------------- */
 
 struct symTabNode {
     char identifier[IDLENGTH];
     char typeSymbol[TYPELENGTH];
+    char new_identifier[IDLENGTH];
+    unsigned char is_declared;
 };
 
 typedef  struct symTabNode SYMTABNODE;
@@ -209,7 +215,14 @@ number_constant : integer { $$ = create_node(NOTHING, NUMBER_CONSTANT, $1, NULL,
 		| MINUS real_number { $$ = create_node(MINUS, NUMBER_CONSTANT, $2, NULL, NULL); }
 		;
 
-integer		: NUMBER { $$ = create_node($1, INTEGER_NODE, NULL, NULL, NULL); }
+integer		: NUMBER { 
+			int value;
+			value = $1;
+
+			if (value < 0) value *= -1;
+
+			$$ = create_node(value, INTEGER_NODE, NULL, NULL, NULL); 
+			}
 		;
 
 real_number	: integer DOT integer { $$ = create_node(NOTHING, REAL_NODE, $1, $3, NULL); }
@@ -406,10 +419,10 @@ void CodeGen(TERNARY_TREE t) {
 		case IDENTIFIERS_LIST:
 			/* If there's not a second node, first is iden, if not, first is list */
 			if (t->second == NULL) { /* Iden */
-				CodeGen(t->first);
+				PrintIdentifierForDeclaration(t->first);
 			}
 			else { /* Iden list, iden */
-				CodeGen(t->second);
+				PrintIdentifierForDeclaration(t->second);
 				printf(",");
 				CodeGen(t->first);
 			}
@@ -453,6 +466,7 @@ void CodeGen(TERNARY_TREE t) {
 			break;
 
 		case ASSIGNMENT_STATEMENT:
+
 			CodeGen(t->second);
 			printf(" = ");
 			CodeGen(t->first);
@@ -555,12 +569,17 @@ void CodeGen(TERNARY_TREE t) {
 				}
 				else { /* if a iden */
 					/* Get Iden */
+					char identifierString[IDLENGTH];
+					char identifierType[TYPELENGTH];
 					TERNARY_TREE iden = t->second->first;
 
+					GetIdentifier(iden->item, identifierString);
+					GetType(iden->item, identifierType);
+
 					printf("printf(\"");
-					printf("%%%s", symTab[iden->item]->typeSymbol);
+					printf("%%%s", identifierType);
 					printf("\", ");
-					printf("%s", symTab[iden->item]->identifier);
+					printf("%s", identifierString);
 					printf(");\n");
 				}
 
@@ -677,13 +696,7 @@ void CodeGen(TERNARY_TREE t) {
 			
 
 		case VALUE:
-<<<<<<< HEAD
 			CodeGen(t->first);
-=======
-			printf("(");
-			CodeGen(t->first);
-			printf(")");
->>>>>>> c49bed6fd46a8e079f8e20e93f89fd044538c7e7
 			break;
 
 
@@ -704,17 +717,18 @@ void CodeGen(TERNARY_TREE t) {
 			if (t->first != NULL) { /* Number */
 				CodeGen(t->first);
 			} else { /* Char */
-<<<<<<< HEAD
 				printf("'%c'", t->item);
-=======
-				printf("%c", t->item);
->>>>>>> c49bed6fd46a8e079f8e20e93f89fd044538c7e7
 			}
 			break;
 
 		case IDENNODE: ;
-			GetIdentifier(t->item, idensymbol);
-			printf("%s", idensymbol);
+			if (GetIfIdenDeclared(t) == 1) {
+				GetIdentifier(t->item, idensymbol);
+				printf("%s", idensymbol);
+			}
+			else {
+				fprintf(stderr, "Variable used that hasn't been defined.");
+			}
 			break;
 
 
@@ -725,7 +739,7 @@ void CodeGen(TERNARY_TREE t) {
 
 void GetIdentifier(int number, char* result) {
 	if (number < SYMTABSIZE) {
-		strncpy(result, symTab[number]->identifier, IDLENGTH);
+		strncpy(result, symTab[number]->new_identifier, IDLENGTH);
 	}
 	else {
 		strncpy(result, "IdenNotFound", IDLENGTH);
@@ -792,12 +806,15 @@ void SymbolTablePopulateSingleType(TERNARY_TREE iden_list, int type) {
 		switch(type) {
 			case INT:
 				strncpy(symTab[iden_list->item]->typeSymbol, "d", TYPELENGTH);
+				symTab[iden_list->item]->is_declared = 1;
 				break;
 			case REAL:
 				strncpy(symTab[iden_list->item]->typeSymbol, "lf", TYPELENGTH);
+				symTab[iden_list->item]->is_declared = 1;
 				break;
 			case CHAR:
 				strncpy(symTab[iden_list->item]->typeSymbol, "c", TYPELENGTH);
+				symTab[iden_list->item]->is_declared = 1;
 				break;
 			default:
 				fprintf(stderr, "DEBUG: Hit default case in SymbolTablePopulateSingleType. Type = %d\n", type);
@@ -879,6 +896,20 @@ void GetCurrentForByVariable(char* result) {
 	
 	sprintf(result, "_by%d", _usedFors);
 	_usedFors++;
+
+}
+
+unsigned char GetIfIdenDeclared(TERNARY_TREE idennode) {
+
+	return symTab[idennode->item]->is_declared;
+}
+
+void PrintIdentifierForDeclaration(TERNARY_TREE idennode) {
+	
+	/* Set in symtab */
+	symTab[idennode->item]->is_declared = 1;
+
+	printf("%s", symTab[idennode->item]->new_identifier);
 
 }
 
