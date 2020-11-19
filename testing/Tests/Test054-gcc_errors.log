@@ -1,4 +1,0 @@
-/home/kai/spl-compiler/testing/Tests/Test054.c: In function ‘main’:
-/home/kai/spl-compiler/testing/Tests/Test054.c:6:5: error: lvalue required as decrement operand
- a = --2147483648;
-     ^~

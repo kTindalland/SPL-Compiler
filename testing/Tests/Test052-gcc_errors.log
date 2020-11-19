@@ -1,7 +1,0 @@
-/home/kai/spl-compiler/testing/Tests/Test052.c: In function ‘main’:
-/home/kai/spl-compiler/testing/Tests/Test052.c:6:1: warning: useless type name in empty declaration
- int volatile;
- ^~~
-/home/kai/spl-compiler/testing/Tests/Test052.c:7:10: error: expected identifier or ‘(’ before ‘=’ token
- volatile = 1;
-          ^
