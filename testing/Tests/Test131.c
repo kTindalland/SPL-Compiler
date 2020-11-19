@@ -5,11 +5,9 @@ int var2;
 var1 = 1;
 var2 = 2;
 if ((var2)>(var1)) {
-printf("'y'");
-
+printf("y");
 }else {
-printf("'n'");
-
+printf("n");
 }
 printf("\n");
 

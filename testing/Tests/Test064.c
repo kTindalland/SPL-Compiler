@@ -11,8 +11,7 @@ printf("3.14159");
 
 printf("\n");
 
-printf("'x'");
-
+printf("x");
 printf("\n");
 
 

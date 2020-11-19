@@ -5,8 +5,7 @@ double var5,var4;
 char var7,var6;
 printf("3");
 printf("14159");
-printf("'x'");
-
+printf("x");
 printf("\n");
 
 
