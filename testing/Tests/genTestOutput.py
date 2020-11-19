@@ -1,9 +1,5 @@
 import os
 
-# Added by BCT for python 2/3 compatibility
-def str_join(*args):
-    return ''.join(map(str, args))
-	
 files = os.listdir(".")
 highestTest = 0
 for f in files:
@@ -40,8 +36,8 @@ else:
 print "Enter expected output"
 output = raw_input().strip()
 
-tf = file(str_join("Test", highestTest, "-output.txt"),"w")
-tf.write(str_join(testtype, "\n") )
-tf.write(str_join(output, "\n") )
+tf = file("Test" + highestTest + "-output.txt","w")
+tf.write(testtype + "\n")
+tf.write(output + "\n")
 tf.close()
-os.system(str_join("type ", "Test", highestTest, "-output.txt")
+os.system("type " + "Test" + highestTest + "-output.txt")
