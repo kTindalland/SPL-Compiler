@@ -42,7 +42,7 @@ TEST  TYPE      CATEGORY	DESCRIPTION
 041 - #codegen  Assignment	Assignment of char var to char var
 042 - #codegen  Assignment	Assignment of int var to real var
 043 - #codegen  Assignment	Assignment of char var to real var
-044 - #codegen  Assignment	Assignment of real var to int var
+044 - #warning Assignment	Assignment of real var to int var
 045 - #codegen  Assignment	Assignment of char var to int var
 046 - #warning  Assignment	Assignment of int var to char var (should probably disallow)
 047 - #warning  Assignment	Assignment of real var to char var (should probably disallow)
