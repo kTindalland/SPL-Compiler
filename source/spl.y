@@ -524,9 +524,14 @@ void CodeGen(TERNARY_TREE t) {
 		case OUTPUT_LIST:
 			if (t->second == NULL) { /* Single Value */
 				if (t->first->item == CONSTANT) { /* If a constant */
-					printf("printf(\"");
-					CodeGen(t->first->first);
-					printf("\");\n");
+					if (t->first->first->first == NULL) { /* Char */
+						printf("printf(\"%c\");", t->first->first->item);
+					}
+					else {
+						printf("printf(\"");
+						CodeGen(t->first->first);
+						printf("\");\n");
+					}
 				}
 				else if (t->first->item == EXPRESSION) {
 					/* Expression */
@@ -563,9 +568,14 @@ void CodeGen(TERNARY_TREE t) {
 				
 				CodeGen(t->first);
 				if (t->second->item == CONSTANT) { /* If a constant */
-					printf("printf(\"");
-					CodeGen(t->second->first);
-					printf("\");\n");
+					if (t->second->first->first == NULL) { /* Char */
+						printf("printf(\"%c\");", t->second->first->item);
+					}
+					else {
+						printf("printf(\"");
+						CodeGen(t->second->first);
+						printf("\");\n");
+					}
 				}
 				else { /* if a iden */
 					/* Get Iden */

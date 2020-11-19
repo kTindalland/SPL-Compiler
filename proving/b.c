@@ -1,37 +1,28 @@
 #include <stdio.h>
-<<<<<<< HEAD
 int main(int argc, char* argv[]) {
-int b,a;
-char c;
-double e,d;
-scanf(" %d",&a);
-scanf(" %d",&b);
-if (((a))>((b))) {
+int var2,var1;
+char var3;
+double var5,var4;
+scanf(" %d",&var1);
+scanf(" %d",&var2);
+if ((var1)>(var2)) {
 printf("A");
-
 }else {
 printf("B");
-
 }
 printf("\n");
 
-scanf(" %lf",&d);
-e = ((d)) * ((2.3));
-printf("%lf", e);
+scanf(" %lf",&var4);
+var5 = (var4) * (2.3);
+printf("%lf", var5);
 
 printf("\n");
 
-scanf(" %c",&c);
-printf("%c", c);
+scanf(" %c",&var3);
+printf("%c", var3);
 
 printf("\n");
 
 
 return 0; 
 }
-=======
-int _by;int main(int argc, char* argv[]) {
-int b,a;char c;double e,d;scanf(" %d",&a);scanf(" %d",&b);if (((a))>((b))) {printf("A");}else {printf("B");}printf("\n");scanf(" %lf",&d);e = ((d)) * ((2.3));printf("%lf", e);printf("\n");scanf(" %c",&c);printf("%c", c);printf("\n");
-return 0; 
-}
->>>>>>> c49bed6fd46a8e079f8e20e93f89fd044538c7e7

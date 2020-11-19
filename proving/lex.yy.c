@@ -1044,6 +1044,10 @@ YY_RULE_SETUP
 	
 	#ifndef PRINT
 	yylval.iVal = atoi(yytext);
+
+	if (yylval.iVal < 0) {
+		yylval.iVal = yylval.iVal * -1;
+	}
 	#endif
 
 	RETURN(number, NUMBER);
@@ -1051,7 +1055,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 80 "spl.l"
+#line 84 "spl.l"
 {
 	char character;
 
@@ -1065,7 +1069,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 90 "spl.l"
+#line 94 "spl.l"
 {
 
 	#ifndef PRINT
@@ -1077,10 +1081,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 99 "spl.l"
+#line 103 "spl.l"
 ECHO;
 	YY_BREAK
-#line 1084 "lex.yy.c"
+#line 1088 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2085,7 +2089,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 99 "spl.l"
+#line 103 "spl.l"
 
 
 
@@ -2128,6 +2132,7 @@ int installId(char *id)
     extern SYMTABNODEPTR symTab[SYMTABSIZE]; 
     extern int currentSymTabSize;
     int index;
+    char converted_identifier[IDLENGTH];
 
     index = lookup(id);
     if (index >= 0)
@@ -2144,6 +2149,14 @@ int installId(char *id)
        /* Recommended code for preventing buffer overrun on bounded strings */
        strncpy(symTab[currentSymTabSize]->identifier,id,IDLENGTH);
        symTab[currentSymTabSize]->identifier[IDLENGTH-1] = '\0';
+
+	/* Set is_declared */
+	symTab[currentSymTabSize]->is_declared = 0;
+	
+	/* Set new variable name */
+	sprintf(converted_identifier, "var%d", currentSymTabSize);
+	strncpy(symTab[currentSymTabSize]->new_identifier, converted_identifier, IDLENGTH);
+
        return(currentSymTabSize++);
     }
 }
